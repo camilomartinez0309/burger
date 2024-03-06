@@ -8,7 +8,8 @@ interface Product extends BurgerDataObject {
     newPrice: number
 }
 
-const useLocalStorageCart = (initialCart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]')) => {
+const useLocalStorageCart = () => {
+    const initialCart: Product[] = typeof window !== 'undefined' ? JSON.parse(window.localStorage.getItem('cart') || '[]') : [];
     const [cart, setCart] = useState<Product[]>(initialCart);
 
     const addToCart = (product: Product) => {
@@ -40,14 +41,18 @@ const useLocalStorageCart = (initialCart: Product[] = JSON.parse(localStorage.ge
     };
 
     useEffect(() => {
-        const storedCart = localStorage.getItem('cart');
-        if (storedCart) {
-            setCart(JSON.parse(storedCart));
+        if(typeof window !== 'undefined') {
+            const storedCart = window.localStorage.getItem('cart');
+            if (storedCart) {
+                setCart(JSON.parse(storedCart));
+            }
         }
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        if(typeof window !== 'undefined') {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
     }, [cart]);
 
     return { cart, addToCart, removeFromCart, updateQuantity };
